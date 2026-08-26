@@ -6,7 +6,7 @@ Create external-source ingestion and company/environment relationship primitives
 
 ## Dependencies
 
-WORK-011, WORK-013.
+WORK-011, WORK-013, WORK-032.
 
 ## Acceptance Criteria
 
@@ -15,3 +15,5 @@ WORK-011, WORK-013.
 3. Source provenance is retained.
 4. External source reliability is represented.
 5. Company impact analysis has a stable contract.
+6. External ingestion uses the provider-independent Sources/Connector boundary.
+7. Connector/provider-specific objects do not enter environmental domain state.
