@@ -44,6 +44,21 @@ Before every WORK item:
 8. Run relevant regression tests.
 9. Report exact commit/PR and evidence.
 
+## AI/LLM Provider Hot-Swap Requirement
+
+For every AI/LLM integration:
+
+1. Domain code must call only the application-owned AI/LLM Gateway.
+2. Provider/model SDKs are confined to provider adapters.
+3. Provider/model names cannot become required semantic fields of domain entities.
+4. A provider/model can be replaced without domain schema migration or business-logic rewrite.
+5. Completed execution records must preserve provider/model metadata for auditability.
+6. The same capability contract must be demonstrably executable against at least two provider/model implementations through tests or adapters.
+7. Provider-specific prompt, response, tool, or embedding details must be normalized behind the gateway where they affect persistent cognition.
+8. A model/provider outage may trigger policy-approved failover without changing domain semantics.
+
+"Provider-neutral interface" is insufficient evidence. The implementation must demonstrate actual swapability.
+
 ## Architecture Change
 
 If implementation discovers a genuine architectural conflict:
