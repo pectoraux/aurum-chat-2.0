@@ -1,82 +1,148 @@
 # Aurum 2.0 — Initial Work Item Dependency Graph
 
-The graph is intentionally conservative. Each work item should remain small enough for independent repository verification.
+The implementation plan is a dependency DAG. Work is eligible when its actual dependencies are verified complete; it is not required to follow one artificial serial chain.
 
 ```text
-WORK-001 Architecture / repository foundation
-   ↓
-WORK-002 Infrastructure foundation
-   ↓
-WORK-003 Module contract and architecture enforcement
-   ↓
-WORK-004 Organization / tenant / identity foundation
-   ↓
-WORK-005 Event foundation
-   ↓
-WORK-006 Observation + provenance foundation
-   ↓
-WORK-007 World entities + relationships
-   ↓
-WORK-008 Temporal world state
-   ↓
-WORK-009 Claims / evidence / belief model
-   ↓
-WORK-010 Contradiction + epistemic evaluation
-   ↓
-WORK-011 Unknowns + investigation contracts
-   ↓
-WORK-012 Attention policy
-   ↓
-WORK-013 Company learning model
-   ↓
-WORK-014 External/environment ingestion
-   ↓
-WORK-015 Change detection + impact analysis
-   ↓
-WORK-016 People / organizational knowledge
-   ↓
-WORK-017 Presence / activity inference
-   ↓
-WORK-018 Process reconstruction
-   ↓
-WORK-019 Capability graph
-   ↓
-WORK-020 Workforce intelligence
-   ↓
-WORK-021 Supplier intelligence
-   ↓
-WORK-022 Action policy
-   ↓
-WORK-023 Agent workforce
-   ↓
-WORK-024 Agent evaluation / termination
-   ↓
-WORK-025 Extension contracts
-   ↓
-WORK-026 Software builder lifecycle
-   ↓
-WORK-027 Outcome measurement
-   ↓
-WORK-028 Conversation domain
-   ↓
-WORK-029 Channel adapters
-   ↓
-WORK-030 MD control surface
+FOUNDATION
+WORK-001
+  ↓
+WORK-002
+  ↓
+WORK-003
+  ↓
+WORK-004
+  ├──────────────→ WORK-012 Attention Policy
+  ├──────────────→ WORK-036 Goals / Desired State
+  └──────────────→ WORK-031 AI/LLM Gateway
+
+WORK-005 Events
+  ├──────────────→ WORK-006 Observations + Provenance
+  └──────────────→ WORK-032 Sources / Connectors
+
+WORK-006
+  ↓
+WORK-007 World Entities / Relationships
+  ↓
+WORK-008 Temporal World State
+  ↓
+WORK-009 Claims / Evidence / Beliefs
+  ├──────────────→ WORK-010 Contradiction / Epistemics
+  └──────────────→ WORK-036 Goals / Desired State
+
+WORK-010
+  ↓
+WORK-011 Unknowns / Investigation Contracts
+
+WORK-012 + WORK-031 + WORK-009 + WORK-010 + WORK-011
+  ↓
+WORK-033 Cognitive Orchestration
+
+WORK-012 + WORK-013 + WORK-027 + WORK-033
+  ↓
+WORK-028 Conversation Domain
+
+SOURCE / ENVIRONMENT TRACK
+WORK-032
+  ↓
+WORK-014 Environmental Intelligence
+  ↓
+WORK-015 Change Detection / Impact Analysis
+
+PEOPLE / ORGANIZATION TRACK
+WORK-009 + WORK-008
+  ↓
+WORK-016 Organizational Knowledge / Transactive Memory
+  ├──────────────→ WORK-017 Presence / Activity
+  ├──────────────→ WORK-018 Process Reconstruction
+  └──────────────→ WORK-019 Capability Graph
+
+WORK-019
+  ├──────────────→ WORK-020 Workforce Intelligence
+  └──────────────→ WORK-021 Supplier Intelligence
+
+ACTION TRACK
+WORK-022 Action Policy
+  ├──────────────→ WORK-023 Agent Workforce
+  ├──────────────→ WORK-025 Extension Contracts
+  └──────────────→ WORK-038 Notifications
+
+WORK-031 + WORK-002 + WORK-022
+  ↓
+WORK-034 Agent Gateway / Runtime
+  ↓
+WORK-023 Agent Workforce
+  ↓
+WORK-024 Agent Evaluation / Termination
+
+EXTENSION TRACK
+WORK-025 + WORK-022
+  ↓
+WORK-035 General-Purpose Extension Runtime
+
+WORK-023 + WORK-034 + WORK-035 + WORK-025
+  ↓
+WORK-026 Software Builder Lifecycle
+
+OUTCOME / LEARNING TRACK
+WORK-013 + WORK-021 + WORK-023 + WORK-026
+  ↓
+WORK-027 Outcome Measurement
+  ↓
+WORK-013 remains the learning-model contract; outcome evidence continuously feeds it.
+
+AUDIT TRACK
+WORK-005 + WORK-006 + WORK-011 + WORK-022 + WORK-031
+  ↓
+WORK-037 Audit / Decision Evidence
+
+NOTIFICATION / EXPERIENCE TRACK
+WORK-012 + WORK-022 + WORK-028
+  ↓
+WORK-038 Notification Delivery
+  ↓
+WORK-030 MD Control Surface
+
+FINAL EXPERIENCE
+WORK-022 + WORK-027 + WORK-028 + WORK-036 + WORK-037 + WORK-038
+  ↓
+WORK-030 MD Control Surface
+
+CHANNEL TRACK
+WORK-028
+  ↓
+WORK-029 Channel Adapters
+
+The channel adapter layer may be implemented in parallel with notification delivery after the conversation contract exists, but both must obey the same provider-isolation and action-policy rules.
 ```
 
-### Parallelization
+## Parallelization Rules
 
-After the foundation and contracts are stable, independent work may be parallelized only where the dependency graph proves no shared mutable architectural state.
+Once foundation contracts are stable, independent branches may be implemented in parallel only when:
 
-Examples of potentially parallel tracks:
+1. all declared dependencies are actually present in the repository;
+2. no two work items are simultaneously modifying the same architectural primitive;
+3. no work item depends on an unverified contract;
+4. architecture checks remain green.
 
-- external/environment ingestion
-- presence
-- process intelligence
-- capability graph
+Likely parallel tracks include:
 
-But architecture-changing discoveries must return to the architect before implementation continues.
+- environmental intelligence;
+- people/presence;
+- process intelligence;
+- capability/workforce;
+- LLM gateway;
+- source connectors.
 
-## Rule
+## Critical Rule
 
-Do not collapse the entire graph into a single milestone. Each WORK item requires its own acceptance criteria, tests, architecture checks, and review.
+Every WORK item requires:
+
+- explicit acceptance criteria;
+- objective verification;
+- architecture checks;
+- relevant integration/behavioral tests;
+- exact scope and out-of-scope definition;
+- architect review of the actual repository.
+
+Do not collapse the graph into a single milestone.
+""
