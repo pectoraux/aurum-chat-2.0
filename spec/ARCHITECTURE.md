@@ -1,7 +1,7 @@
 # Aurum 2.0 — Frozen Architecture Specification
 
-**Status:** Proposed for Freeze  
-**Version:** 1.0  
+**Status:** FROZEN
+**Version:** 1.0
 **Repository:** `pectoraux/aurum-chat-2.0`
 
 ## 1. Product Definition
@@ -153,7 +153,27 @@ The company explicitly configures:
 
 Attention policy determines what deserves human attention. Information can be retained without interrupting people.
 
-## 8. Learned Company Model
+## 8. Goals and Desired State
+
+Goals represent explicit desired organizational states and outcomes.
+
+A goal may define:
+
+- objective;
+- target state;
+- metric;
+- threshold;
+- horizon;
+- owner;
+- priority;
+- evidence sources;
+- success criteria.
+
+Goals are distinct from beliefs and attention policies.
+
+The system may detect gaps between observed state and desired state, but such gaps remain evidence-backed findings or hypotheses until evaluated.
+
+## 9. Learned Company Model
 
 Aurum learns what is useful to a particular company from:
 
@@ -169,7 +189,7 @@ Learned preferences must never silently override explicit policy.
 
 Aurum may propose policy changes, but the configured authority decides whether they become policy.
 
-## 9. Environmental Intelligence
+## 10. Environmental Intelligence
 
 Aurum may continuously gather authorized external information from sources such as:
 
@@ -191,7 +211,42 @@ External information follows:
 
 external event → observation → claim → relationship to company → impact analysis → attention decision.
 
-## 10. Presence and Activity Intelligence
+External and internal information use the same evidence/provenance semantics.
+
+## 11. Source and Connector Architecture
+
+Every external/internal information source is represented through a provider-independent source/connector boundary.
+
+```text
+Source definition
+      ↓
+Connector adapter
+      ↓
+Ingestion execution
+      ↓
+Raw artifact / event
+      ↓
+Observation + provenance
+```
+
+A source definition may include:
+
+- source identity;
+- source type;
+- capabilities;
+- authorization state;
+- permissions/scope;
+- sync mode;
+- cursor/checkpoint;
+- rate limits;
+- reliability;
+- tenant ownership.
+
+Connector implementations are replaceable. They must not leak provider-specific objects into domain modules.
+
+Connectors must support idempotent webhook and polling ingestion where applicable, deduplication, retry, checkpointing, and replay/reprocessing without corrupting authoritative history.
+
+## 12. Presence and Activity Intelligence
 
 Aurum may infer presence/activity from authorized signals such as:
 
@@ -209,7 +264,7 @@ Aurum may infer presence/activity from authorized signals such as:
 
 Absence is an inference, not automatically a fact. Missing telemetry must not become an accusation.
 
-## 11. Process Intelligence
+## 13. Process Intelligence
 
 Aurum reconstructs how work actually happens from events and observations.
 
@@ -227,7 +282,7 @@ It detects:
 
 It can estimate frequency, labor cost, cycle time, error rate, affected employees, automation potential, and expected ROI.
 
-## 12. Capability Graph
+## 14. Capability Graph
 
 Capabilities may be possessed by:
 
@@ -252,7 +307,7 @@ The graph answers:
 - Should it outsource?
 - Should it recruit an agent?
 
-## 13. Workforce Intelligence
+## 15. Workforce Intelligence
 
 Aurum may identify:
 
@@ -271,7 +326,7 @@ evidence → assessment → alternatives → recommendation → authorized human
 
 Aurum does not autonomously terminate employees.
 
-## 14. Supplier and External Workforce Intelligence
+## 16. Supplier and External Workforce Intelligence
 
 Aurum may continuously evaluate suppliers/subcontractors across:
 
@@ -290,7 +345,7 @@ Aurum may continuously evaluate suppliers/subcontractors across:
 
 It may recommend supplier changes, diversification, renegotiation, or new partners.
 
-## 15. Investigation Engine
+## 17. Investigation Engine
 
 Investigation is driven by expected information value.
 
@@ -316,7 +371,30 @@ Possible investigation actions include:
 - build temporary analyses;
 - execute authorized actions.
 
-## 16. Transactive Organizational Memory
+## 18. Cognitive Orchestration
+
+A dedicated cognitive orchestrator connects perception, memory, world state, epistemics, investigation, attention, learning, and action.
+
+Canonical loop:
+
+```text
+new observation
+→ update evidence/memory
+→ update world model
+→ evaluate claims/beliefs
+→ detect contradictions/unknowns/changes
+→ evaluate attention and goals
+→ choose investigation if useful
+→ execute investigation
+→ update model
+→ recommend / ask / propose / act according to policy
+→ record outcome
+→ learn
+```
+
+No individual LLM call is the system's cognitive authority. Cognitive orchestration is deterministic at the workflow/policy level and may use LLMs for bounded reasoning tasks.
+
+## 19. Transactive Organizational Memory
 
 Aurum maintains knowledge of who:
 
@@ -330,13 +408,13 @@ Aurum maintains knowledge of who:
 
 This lets Aurum investigate through the right people.
 
-## 17. Agent Workforce
+## 20. Agent Workforce
 
 Agents are organizational actors, not merely LLM calls.
 
 Lifecycle:
 
-PROPOSED → MD APPROVAL → RECRUITED → ACTIVE → EVALUATED → RETAIN / MODIFY / TERMINATE.
+PROPOSED → APPROVAL → RECRUITED → ACTIVE → EVALUATED → RETAIN / MODIFY / TERMINATE.
 
 Agents have:
 
@@ -355,7 +433,27 @@ Agents have:
 
 Aurum may recommend recruitment. Approval requirements are policy-controlled.
 
-## 18. Agent Termination
+## 21. Agent Gateway and Runtime
+
+Persistent agent definitions are separate from execution infrastructure.
+
+```text
+Agent definition
+     ↓
+Agent Gateway
+     ↓
+Provider/runtime adapter
+     ↓
+Agent execution
+     ↓
+Execution result + evidence + cost + outcome
+```
+
+Agent providers are replaceable. Agent business logic must not depend directly on a provider SDK.
+
+Agent execution is asynchronous, traceable, permission-scoped, retryable, and idempotent where applicable.
+
+## 22. Agent Termination
 
 Aurum continuously evaluates agents for:
 
@@ -372,7 +470,7 @@ Termination follows policy and authorization, then:
 
 approval → contract termination → permission revocation → runtime shutdown → knowledge retention → audit.
 
-## 19. Extension / Software Builder
+## 23. Extension / Software Builder
 
 Aurum can identify opportunities for arbitrary software capabilities.
 
@@ -382,7 +480,24 @@ observed problem → process model → opportunity → software feasibility → 
 
 The extension system must not be artificially constrained to a predefined list of feature types.
 
-## 20. Action Authority
+### Extension runtime capabilities
+
+The runtime must be capable of hosting real applications, not only stateless functions. It must support, subject to declared manifest permissions:
+
+- persistent scoped state;
+- host-rendered/declarative UI surfaces;
+- scheduled triggers;
+- event subscriptions;
+- scoped external participants/access;
+- isolated execution;
+- quotas and resource controls;
+- versioned manifests and compatibility;
+- deployment, rollback, disablement, and lifecycle state;
+- auditable invocation and outcome measurement.
+
+Arbitrary extension functionality remains constrained by the security sandbox, platform APIs, declared permissions, and policy. It must not be constrained to a fixed product-feature catalog.
+
+## 24. Action Authority
 
 Aurum distinguishes:
 
@@ -397,7 +512,64 @@ Company policy determines which require approval.
 
 LLMs and agents cannot bypass action policy.
 
-## 21. Learning
+## 25. LLM and AI Provider Gateway
+
+All AI/LLM capabilities are accessed through provider-independent application-owned interfaces.
+
+```text
+Cognitive capability
+       ↓
+AI/LLM Gateway
+       ↓
+Provider/model registry
+       ↓
+Provider adapter
+       ↓
+Selected model
+```
+
+The gateway owns:
+
+- provider/model registry;
+- capability metadata;
+- availability and health;
+- authorization/subscription checks;
+- routing/selection;
+- request normalization;
+- response normalization;
+- retries/failover;
+- usage/cost recording;
+- error semantics;
+- model-specific adaptation.
+
+### Hot-swappability invariant
+
+Aurum must be able to switch the provider and/or model used for an AI capability without changing domain code, business entities, persisted semantic state, or workflow definitions.
+
+A provider/model may be changed at runtime or configuration rollout time without an architectural migration. Existing executions retain their recorded provider/model metadata for auditability; future executions use the current eligible selection.
+
+Domain state may reference provider-independent capability identifiers and execution records, but must never make a provider/model name a required semantic dependency.
+
+Provider/model selection distinguishes:
+
+- capability;
+- eligibility;
+- performance;
+- policy;
+- availability;
+- user/company preference.
+
+No provider is architecturally privileged.
+
+## 26. AI/LLM State and Portability
+
+Prompts, tool schemas, structured outputs, embeddings, and model-specific configuration must be versioned behind provider-independent contracts where they affect persistent cognition.
+
+Persisted business meaning must not depend on opaque provider-specific hidden state.
+
+Changing a provider/model may change future outputs, but it must not make existing authoritative domain data unreadable.
+
+## 27. Learning
 
 Learning incorporates:
 
@@ -407,26 +579,59 @@ Learning incorporates:
 - prediction feedback;
 - source feedback;
 - agent performance;
-- investigation efficiency.
+- investigation efficiency;
+- provider/model performance where relevant.
 
 Learned models are versioned and auditable.
 
-## 22. Cognitive Loop
+## 28. Audit and Decision Evidence
 
-REALITY
-→ PERCEIVE
-→ MEMORY
-→ WORLD MODEL
-→ EPISTEMICS
-→ INVESTIGATE when necessary
-→ ATTENTION + LEARN
-→ INFORM / RECOMMEND / ACT
-→ HUMAN / AGENT / SOFTWARE
-→ OUTCOME
-→ LEARN
-→ WORLD MODEL
+Aurum maintains an authoritative audit record for consequential cognition and actions.
 
-## 23. Module Boundaries
+It must be possible to reconstruct:
+
+- observed input;
+- evidence used;
+- belief/claim state;
+- unknowns considered;
+- policy evaluated;
+- model/provider used;
+- recommendation;
+- approval;
+- execution;
+- result;
+- outcome;
+- subsequent learning.
+
+Audit records are append-only from the domain perspective.
+
+## 29. Notifications
+
+Notifications are a dedicated policy-controlled delivery capability for:
+
+- urgent interruptions;
+- attention items;
+- digests;
+- escalations;
+- approval requests;
+- execution results.
+
+Notification delivery is asynchronous, retryable, deduplicated, auditable, and subject to user/channel policy.
+
+## 30. Conversation and Channels
+
+Conversations are persistent interaction records, not authoritative organizational truth by themselves.
+
+Incoming messages enter perception/evidence semantics. Outgoing messages are actions subject to communication policy.
+
+Channels include provider-independent adapters for, where configured:
+
+- WhatsApp-like messaging;
+- web chat;
+- voice/telephony;
+- other approved channels.
+
+## 31. Module Boundaries
 
 Initial ownership modules:
 
@@ -436,10 +641,13 @@ Initial ownership modules:
 - world
 - events
 - observations
+- sources
 - memory
 - epistemics
 - attention
+- goals
 - investigation
+- cognition
 - environment
 - presence
 - processes
@@ -458,7 +666,7 @@ Initial ownership modules:
 
 Each module owns its domain and exposes public contracts. Internal implementation is private.
 
-## 24. Infrastructure
+## 32. Infrastructure
 
 Initial deployment is a modular monolith.
 
@@ -468,7 +676,7 @@ Initial deployment is a modular monolith.
 - Asynchronous workers: long-running cognition/investigation/action.
 - Every execution is traceable by correlation/execution identity.
 
-## 25. Event Architecture
+## 33. Event Architecture
 
 Domain events are typed and versioned.
 
@@ -488,25 +696,7 @@ Minimum envelope:
 
 Events are immutable.
 
-## 26. LLM Architecture
-
-LLMs are replaceable cognitive providers.
-
-Domain modules must not directly depend on a provider.
-
-Cognitive Service → LLM Gateway → provider adapters.
-
-LLM output is never authoritative merely because it came from an LLM.
-
-## 27. Agents vs LLMs
-
-LLM = reasoning capability.
-
-Agent = actor capable of performing actions.
-
-Agents may use one or more LLMs.
-
-## 28. Security
+## 34. Security
 
 Foundational requirements:
 
@@ -521,22 +711,7 @@ Foundational requirements:
 - retention/deletion policies;
 - model-provider data boundaries.
 
-## 29. Auditability
-
-Every consequential action should answer:
-
-- What did Aurum know?
-- What did it believe?
-- What evidence supported it?
-- What did it not know?
-- What policy applied?
-- What threshold was crossed?
-- What was recommended?
-- Who approved it?
-- What executed?
-- What happened afterward?
-
-## 30. Architecture Invariants
+## 35. Architecture Invariants
 
 A1. Events and observations are immutable.
 A2. Beliefs are versioned.
@@ -547,26 +722,35 @@ A6. Unknown is first-class.
 A7. Contradictory evidence is retained.
 A8. Confidence does not replace provenance.
 A9. Historical beliefs are not silently rewritten.
-A10. Policy engine owns authorization.
-A11. LLMs cannot bypass action policy.
-A12. Agents cannot directly mutate authoritative workflow state.
-A13. Modules communicate through public contracts.
-A14. Cross-module internal imports are forbidden.
-A15. Provider implementations stay behind gateways.
-A16. Long-running work is asynchronous.
-A17. Every execution is traceable.
-A18. Actions are idempotent where applicable.
-A19. Learned preferences cannot silently override explicit policy.
-A20. Learned models are versioned/auditable.
-A21. Employment-impacting recommendations are recommendations, not autonomous employment decisions.
-A22. Material conclusions expose evidence and uncertainty.
+A10. Goals are distinct from beliefs and attention policy.
+A11. Policy engine owns authorization.
+A12. LLMs cannot bypass action policy.
+A13. Agents cannot directly mutate authoritative workflow state.
+A14. Modules communicate through public contracts.
+A15. Cross-module internal imports are forbidden.
+A16. Provider implementations stay behind gateways.
+A17. No business/domain state may require a specific AI/LLM provider or model.
+A18. AI/LLM providers and models are hot-swappable without domain migration.
+A19. Provider/model metadata for completed executions is retained for audit only.
+A20. Long-running work is asynchronous.
+A21. Every execution is traceable.
+A22. Actions are idempotent where applicable.
+A23. Learned preferences cannot silently override explicit policy.
+A24. Learned models are versioned/auditable.
+A25. Employment-impacting recommendations are recommendations, not autonomous employment decisions.
+A26. Material conclusions expose evidence and uncertainty.
+A27. Connector implementations cannot leak provider-specific state into domain modules.
+A28. Extension runtime capabilities are general-purpose within sandbox/policy boundaries.
+A29. Notification delivery cannot become authoritative domain state.
+A30. Audit records are append-only from the domain perspective.
 
-## 31. Non-Frozen Implementation Choices
+## 36. Non-Frozen Implementation Choices
 
 The following remain implementation choices:
 
-- LLM provider;
-- embedding model;
+- LLM/AI provider;
+- model family and model version;
+- embedding model/provider;
 - vector store;
 - graph database;
 - WhatsApp provider;
@@ -578,3 +762,4 @@ The following remain implementation choices:
 - deployment vendor.
 
 Architecture freezes capabilities and boundaries, not vendors.
+""
