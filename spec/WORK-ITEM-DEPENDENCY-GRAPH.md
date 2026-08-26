@@ -33,7 +33,7 @@ WORK-010
   ↓
 WORK-011 Unknowns / Investigation Contracts
 
-WORK-012 + WORK-031 + WORK-009 + WORK-010 + WORK-011
+WORK-012 + WORK-031 + WORK-009 + WORK-010 + WORK-011 + WORK-036
   ↓
 WORK-033 Cognitive Orchestration
 
@@ -145,4 +145,3 @@ Every WORK item requires:
 - architect review of the actual repository.
 
 Do not collapse the graph into a single milestone.
-""
